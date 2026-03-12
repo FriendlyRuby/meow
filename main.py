@@ -3,6 +3,8 @@ from aiogram import Bot, Dispatcher
 
 from config import TOKEN
 from bot.handlers.ongoing import router as ongoing_router
+from bot.handlers.anime import router as anime_router
+
 
 async def main():
 
@@ -10,6 +12,7 @@ async def main():
     dp = Dispatcher()
 
     dp.include_router(ongoing_router)
+    dp.include_router(anime_router)
 
     await dp.start_polling(bot)
 

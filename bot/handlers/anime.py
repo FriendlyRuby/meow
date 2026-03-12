@@ -3,6 +3,8 @@ from aiogram.types import Message
 from aiogram.filters import Command
 import requests
 
+from deep_translator import GoogleTranslator
+
 router = Router()
 
 
@@ -30,11 +32,17 @@ async def search_anime(message: Message):
     synopsis = anime["synopsis"]
     image = anime["images"]["jpg"]["image_url"]
 
+    # перевод описания
+    try:
+        synopsis_ru = GoogleTranslator(source="auto", target="ru").translate(synopsis)
+    except:
+        synopsis_ru = synopsis
+
     text = (
         f"🎬 {title}\n\n"
         f"⭐ Рейтинг: {score}\n"
         f"📺 Эпизоды: {episodes}\n\n"
-        f"{synopsis[:400]}..."
+        f"{synopsis_ru[:500]}..."
     )
 
     await message.answer_photo(image, caption=text)

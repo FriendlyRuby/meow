@@ -5,7 +5,7 @@ from config import TOKEN
 from bot.handlers.ongoing import router as ongoing_router
 from bot.handlers.anime import router as anime_router
 from bot.handlers.top import router as top_router
-
+from bot.handlers.callbacks import router as callbacks_router
 
 async def main():
 
@@ -15,7 +15,7 @@ async def main():
     dp.include_router(ongoing_router)
     dp.include_router(anime_router)
     dp.include_router(top_router)
-
+    dp.include_router(callbacks_router)
     await dp.start_polling(bot)
 
 

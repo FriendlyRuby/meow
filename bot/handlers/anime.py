@@ -4,7 +4,9 @@ from aiogram.filters import Command
 import requests
 
 from deep_translator import GoogleTranslator
+
 from bot.keyboards.anime_buttons import anime_keyboard
+from bot.keyboards.anime_select import anime_select_keyboard
 
 router = Router()
 
@@ -13,50 +15,82 @@ router = Router()
 async def search_anime(message: Message):
 
     query = message.text.replace("/anime", "").strip()
-    try:
-        query = GoogleTranslator(source="ru", target="en").translate(query)
-    except:
-        pass
+
     if not query:
-        await message.answer("Напиши название аниме\n\nПример:\n/anime Naruto")
+        await message.answer(
+            "Напиши название аниме\n\nПример:\n/anime Naruto"
+        )
         return
 
-    url = f"https://api.jikan.moe/v4/anime?q={query}&type=tv&limit=1"
+    # ---------- ПЕРВЫЙ ПОИСК (как есть) ----------
+
+    url = f"https://api.jikan.moe/v4/anime?q={query}&limit=5"
     r = requests.get(url).json()
 
-    if not r["data"]:
+    anime_list = r["data"]
+
+    # ---------- ЕСЛИ НИЧЕГО НЕ НАШЛО ----------
+
+    if not anime_list:
+
+        try:
+            query_en = GoogleTranslator(
+                source="auto",
+                target="en"
+            ).translate(query)
+
+            url = f"https://api.jikan.moe/v4/anime?q={query_en}&limit=5"
+            r = requests.get(url).json()
+
+            anime_list = r["data"]
+
+        except:
+            pass
+
+    if not anime_list:
         await message.answer("Аниме не найдено 😢")
         return
 
-    anime = r["data"][0]
+    # ---------- ЕСЛИ НЕСКОЛЬКО ----------
+
+    if len(anime_list) > 1:
+
+        keyboard = anime_select_keyboard(anime_list)
+
+        await message.answer(
+            "Я нашёл несколько вариантов 👇",
+            reply_markup=keyboard
+        )
+
+        return
+
+    anime = anime_list[0]
+
+    await send_anime_card(message, anime)
+
+
+async def send_anime_card(message, anime):
 
     title = anime["title"]
     score = anime["score"]
     episodes = anime["episodes"]
-    synopsis = anime["synopsis"]
     image = anime["images"]["jpg"]["image_url"]
     mal_url = anime["url"]
+    mal_id = anime["mal_id"]
 
-    # трейлер
-    title_for_search = title.replace(" ", "+")
+    # ---------- ТРЕЙЛЕР ----------
 
     trailer = None
 
     if anime["trailer"] and anime["trailer"]["url"]:
         trailer = anime["trailer"]["url"]
     else:
+        title_for_search = title.replace(" ", "+")
         trailer = f"https://www.youtube.com/results?search_query={title_for_search}+trailer"
-    # перевод
-    try:
-        synopsis_ru = GoogleTranslator(source="auto", target="ru").translate(synopsis)
-    except:
-        synopsis_ru = synopsis
 
-    synopsis_ru = synopsis_ru[:1500]
+    keyboard = anime_keyboard(trailer, mal_url, mal_id)
 
-    keyboard = anime_keyboard(trailer, mal_url)
-
-    short_text = (
+    text = (
         f"🎬 {title}\n\n"
         f"⭐ Рейтинг: {score}\n"
         f"📺 Эпизоды: {episodes}"
@@ -64,11 +98,6 @@ async def search_anime(message: Message):
 
     await message.answer_photo(
         image,
-        caption=short_text,
+        caption=text,
         reply_markup=keyboard
     )
-
-    await message.answer(
-        f"📖 Сюжет:\n\n{synopsis_ru}"
-    )
-    synopsis_ru = synopsis_ru.split("[Written by MAL Rewrite]")[0]

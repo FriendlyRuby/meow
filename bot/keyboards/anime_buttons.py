@@ -1,26 +1,38 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
-def anime_keyboard(trailer_url, mal_url, mal_id):
+def anime_keyboard(trailer, mal_url, mal_id):
 
-    buttons = []
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
 
-    if trailer_url:
-        buttons.append(
-            [InlineKeyboardButton(text="🎬 Трейлер", url=trailer_url)]
-        )
+            [
+                InlineKeyboardButton(
+                    text="📖 Сюжет",
+                    callback_data=f"plot_{mal_id}"
+                ),
 
-    buttons.append(
-        [InlineKeyboardButton(text="⭐ Страница MAL", url=mal_url)]
+                InlineKeyboardButton(
+                    text="🎥 Трейлер",
+                    url=trailer
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    text="🔗 Похожие",
+                    callback_data=f"similar_{mal_id}"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    text="🌐 MAL",
+                    url=mal_url
+                )
+            ]
+
+        ]
     )
-
-    buttons.append(
-        [InlineKeyboardButton(
-            text="📖 Полный сюжет",
-            callback_data=f"story_{mal_id}"
-        )]
-    )
-
-    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return keyboard

@@ -1,6 +1,7 @@
 from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import requests
 
 from deep_translator import GoogleTranslator
@@ -78,11 +79,20 @@ async def search_anime(message: Message):
 async def send_anime_card(message, anime):
 
     title = anime["title"]
-    score = anime["score"]
-    episodes = anime["episodes"]
+    score = anime["score"] or "?"
+    episodes = anime["episodes"] or "?"
+
     image = anime["images"]["jpg"]["image_url"]
     mal_url = anime["url"]
     mal_id = anime["mal_id"]
+
+    # ---------- ГОД ----------
+
+    year = anime["year"] if anime["year"] else "?"
+
+    # ---------- ЖАНРЫ ----------
+
+    genres = ", ".join([g["name"] for g in anime["genres"]])
 
     # ---------- ТРЕЙЛЕР ----------
 
@@ -95,13 +105,16 @@ async def send_anime_card(message, anime):
     keyboard = anime_keyboard(trailer, mal_url, mal_id)
 
     text = (
-        f"🎬 {title}\n\n"
+        f"🎬 <b>{title}</b>\n\n"
         f"⭐ Рейтинг: {score}\n"
-        f"📺 Эпизоды: {episodes}"
+        f"📺 Эпизоды: {episodes}\n"
+        f"🎭 Жанры: {genres}\n"
+        f"📅 Год: {year}"
     )
 
     await message.answer_photo(
-        image,
+        photo=image,
         caption=text,
-        reply_markup=keyboard
+        reply_markup=keyboard,
+        parse_mode="HTML"
     )

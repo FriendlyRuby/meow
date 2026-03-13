@@ -11,6 +11,9 @@ from bot.handlers.random_anime import router as random_router
 from bot.handlers.start import router as start_router
 from bot.handlers.help import router as help_router
 from bot.handlers.menu import router as menu_router
+from bot.handlers.recommend import router as recommend_router
+from bot.handlers.similar import router as similar_router
+from bot.handlers.top_genre import router as topgenre_router
 
 async def main():
 
@@ -32,6 +35,9 @@ async def main():
     dp.include_router(start_router)
     dp.include_router(help_router)
     dp.include_router(menu_router)
+    dp.include_router(recommend_router)
+    dp.include_router(similar_router)
+    dp.include_router(topgenre_router)
     
     await dp.start_polling(bot)
 

@@ -13,7 +13,10 @@ router = Router()
 async def search_anime(message: Message):
 
     query = message.text.replace("/anime", "").strip()
-
+    try:
+        query = GoogleTranslator(source="ru", target="en").translate(query)
+    except:
+        pass
     if not query:
         await message.answer("Напиши название аниме\n\nПример:\n/anime Naruto")
         return

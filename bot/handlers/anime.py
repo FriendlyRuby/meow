@@ -38,11 +38,14 @@ async def search_anime(message: Message):
     except:
         synopsis_ru = synopsis
 
-    text = (
-        f"🎬 {title}\n\n"
-        f"⭐ Рейтинг: {score}\n"
-        f"📺 Эпизоды: {episodes}\n\n"
-        f"{synopsis_ru[:500]}..."
+    short_text = (
+    f"🎬 {title}\n\n"
+    f"⭐ Рейтинг: {score}\n"
+    f"📺 Эпизоды: {episodes}"
     )
 
-    await message.answer_photo(image, caption=text)
+    await message.answer_photo(image, caption=short_text)
+
+    await message.answer(
+    f"📖 Сюжет:\n\n{synopsis_ru}"
+    )

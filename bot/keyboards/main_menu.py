@@ -11,6 +11,9 @@ main_menu = ReplyKeyboardMarkup(
             KeyboardButton(text="🏆 Топ аниме")
         ],
         [
+            KeyboardButton(text="🎯 Подобрать аниме")
+        ],
+        [
             KeyboardButton(text="❓ Помощь")
         ]
     ],

@@ -18,7 +18,7 @@ async def search_anime(message: Message):
         await message.answer("Напиши название аниме\n\nПример:\n/anime Naruto")
         return
 
-    url = f"https://api.jikan.moe/v4/anime?q={query}&limit=1"
+    url = f"https://api.jikan.moe/v4/anime?q={query}&type=tv&limit=1"
     r = requests.get(url).json()
 
     if not r["data"]:
@@ -35,8 +35,14 @@ async def search_anime(message: Message):
     mal_url = anime["url"]
 
     # трейлер
-    trailer = anime["trailer"]["url"]
+    title_for_search = title.replace(" ", "+")
 
+    trailer = None
+
+    if anime["trailer"] and anime["trailer"]["url"]:
+        trailer = anime["trailer"]["url"]
+    else:
+        trailer = f"https://www.youtube.com/results?search_query={title_for_search}+trailer"
     # перевод
     try:
         synopsis_ru = GoogleTranslator(source="auto", target="ru").translate(synopsis)
@@ -62,3 +68,4 @@ async def search_anime(message: Message):
     await message.answer(
         f"📖 Сюжет:\n\n{synopsis_ru}"
     )
+    synopsis_ru = synopsis_ru.split("[Written by MAL Rewrite]")[0]

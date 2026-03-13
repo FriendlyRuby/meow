@@ -7,6 +7,7 @@ from deep_translator import GoogleTranslator
 
 from bot.keyboards.anime_buttons import anime_keyboard
 from bot.keyboards.anime_select import anime_select_keyboard
+from bot.data.anime_synonyms import ANIME_SYNONYMS
 
 router = Router()
 
@@ -14,7 +15,7 @@ router = Router()
 @router.message(Command("anime"))
 async def search_anime(message: Message):
 
-    query = message.text.replace("/anime", "").strip()
+    query = message.text.replace("/anime", "").strip().lower()
 
     if not query:
         await message.answer(
@@ -22,14 +23,19 @@ async def search_anime(message: Message):
         )
         return
 
-    # ---------- ПЕРВЫЙ ПОИСК (как есть) ----------
+    # ---------- СЛОВАРЬ ----------
 
-    url = f"https://api.jikan.moe/v4/anime?q={query}&limit=5"
+    if query in ANIME_SYNONYMS:
+        query = ANIME_SYNONYMS[query]
+
+    # ---------- ПЕРВЫЙ ПОИСК ----------
+
+    url = f"https://api.jikan.moe/v4/anime?q={query}&type=tv&limit=5"
     r = requests.get(url).json()
 
     anime_list = r["data"]
 
-    # ---------- ЕСЛИ НИЧЕГО НЕ НАШЛО ----------
+    # ---------- ЕСЛИ НЕ НАШЛО ----------
 
     if not anime_list:
 
@@ -39,7 +45,7 @@ async def search_anime(message: Message):
                 target="en"
             ).translate(query)
 
-            url = f"https://api.jikan.moe/v4/anime?q={query_en}&limit=5"
+            url = f"https://api.jikan.moe/v4/anime?q={query_en}&type=tv&limit=5"
             r = requests.get(url).json()
 
             anime_list = r["data"]
@@ -79,8 +85,6 @@ async def send_anime_card(message, anime):
     mal_id = anime["mal_id"]
 
     # ---------- ТРЕЙЛЕР ----------
-
-    trailer = None
 
     if anime["trailer"] and anime["trailer"]["url"]:
         trailer = anime["trailer"]["url"]

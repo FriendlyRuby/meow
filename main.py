@@ -6,6 +6,7 @@ from bot.handlers.ongoing import router as ongoing_router
 from bot.handlers.anime import router as anime_router
 from bot.handlers.top import router as top_router
 from bot.handlers.callbacks import router as callbacks_router
+from bot.handlers.random_anime import router as random_router
 
 async def main():
 
@@ -16,6 +17,8 @@ async def main():
     dp.include_router(anime_router)
     dp.include_router(top_router)
     dp.include_router(callbacks_router)
+    dp.include_router(random_router)
+    
     await dp.start_polling(bot)
 
 

@@ -94,13 +94,6 @@ async def send_anime_card(message, anime):
 
     genres = ", ".join([g["name"] for g in anime["genres"]])
 
-    # ---------- ТРЕЙЛЕР ----------
-
-    if anime["trailer"] and anime["trailer"]["url"]:
-        trailer = anime["trailer"]["url"]
-    else:
-        title_for_search = title.replace(" ", "+")
-        trailer = f"https://www.youtube.com/results?search_query={title_for_search}+trailer"
 
     keyboard = anime_keyboard(trailer, mal_url, mal_id)
 

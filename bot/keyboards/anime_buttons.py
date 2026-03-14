@@ -5,20 +5,21 @@ def anime_keyboard(trailer, mal_url, mal_id):
 
      return InlineKeyboardMarkup(
         inline_keyboard=[
-            [
+             [
                 InlineKeyboardButton(
-                    text="📖 Сюжет",
-                    callback_data=f"plot:{mal_id}"
+                    text="📖 Полный сюжет",
+                    callback_data=f"story_{mal_id}"
                 ),
+
                 InlineKeyboardButton(
-                    text="🎬 Трейлер",
-                    callback_data=f"trailer:{mal_id}"
+                    text="🎥 Трейлер",
+                    url=trailer
                 )
             ],
             [
                 InlineKeyboardButton(
                     text="🔗 Похожие",
-                    callback_data=f"similar:{mal_id}"
+                    callback_data=f"similar_{mal_id}"
                 )
             ],
             [

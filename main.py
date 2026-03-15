@@ -15,30 +15,37 @@ from bot.handlers.recommend import router as recommend_router
 from bot.handlers.similar import router as similar_router
 from bot.handlers.top_genre import router as topgenre_router
 
-async def main():
 
+async def main():
     bot = Bot(token=TOKEN)
-    
+
+    await bot.delete_webhook(drop_pending_updates=True)
+
     dp = Dispatcher()
+
     await bot.set_my_commands([
-    BotCommand(command="anime", description="Найти аниме"),
-    BotCommand(command="random", description="Случайное аниме"),
-    BotCommand(command="ongoing", description="Онгоинги"),
-    BotCommand(command="top", description="Топ аниме"),
-    BotCommand(command="help", description="Помощь"),
-]   )
+        BotCommand(command="anime", description="Найти аниме"),
+        BotCommand(command="random", description="Случайное аниме"),
+        BotCommand(command="ongoing", description="Онгоинги"),
+        BotCommand(command="top", description="Топ аниме"),
+        BotCommand(command="help", description="Помощь"),
+    ])
+
+    dp.include_router(start_router)
+    dp.include_router(menu_router)
+    dp.include_router(help_router)
+
     dp.include_router(ongoing_router)
     dp.include_router(anime_router)
     dp.include_router(top_router)
-    dp.include_router(callbacks_router)
     dp.include_router(random_router)
-    dp.include_router(start_router)
-    dp.include_router(help_router)
-    dp.include_router(menu_router)
+
     dp.include_router(recommend_router)
     dp.include_router(similar_router)
     dp.include_router(topgenre_router)
-    
+
+    dp.include_router(callbacks_router)
+
     await dp.start_polling(bot)
 
 
